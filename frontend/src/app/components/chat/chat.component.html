@@ -1,0 +1,50 @@
+<div class="chat-container">
+  <div class="chat-header">
+    <h2>Chat Service Client</h2>
+    <span class="connection-status" [class.connected]="isConnected">
+      {{ isConnected ? 'Connecté' : 'Déconnecté' }}
+    </span>
+  </div>
+
+  <div class="messages-container" #messagesContainer>
+    <div *ngFor="let message of messages" class="message" [ngClass]="getMessageClass(message)">
+      
+      <div *ngIf="message.type === 'CHAT'" class="chat-message">
+        <div class="message-header">
+          <span class="sender">{{ message.sender }}</span>
+          <span class="timestamp">{{ formatTime(message.timestamp) }}</span>
+        </div>
+        <div class="message-content">{{ message.content }}</div>
+      </div>
+
+      <div *ngIf="message.type === 'JOIN' || message.type === 'LEAVE'" class="system-message">
+        <span>{{ message.content }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="typingStatus" class="typing-indicator">
+      {{ typingStatus }}
+    </div>
+  </div>
+
+  <div class="message-input-container">
+    <div class="input-group">
+      <textarea 
+        #messageInput
+        [(ngModel)]="currentMessage"
+        (input)="onMessageInputChange()"
+        (keypress)="onKeyPress($event)"
+        placeholder="Tapez votre message..."
+        rows="2"
+        [disabled]="!isConnected"
+        class="message-input">
+      </textarea>
+      <button 
+        (click)="onSendMessage()" 
+        [disabled]="!currentMessage.trim() || !isConnected"
+        class="send-button">
+        Envoyer
+      </button>
+    </div>
+  </div>
+</div>
